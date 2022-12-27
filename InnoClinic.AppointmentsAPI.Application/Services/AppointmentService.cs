@@ -81,6 +81,5 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
 
             await _appointmentRepository.SaveAsync();
         }
-
     }
 }
