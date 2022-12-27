@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
+{
+    public class AppointmentForUpdateDTO
+    {
+        [Required]
+        public Guid SpecializationId { get; set; }
+        [Required]
+        public Guid DoctorId { get; set; }
+        [Required]
+        public Guid ServiceId { get; set; }
+        [Required]
+        public Guid OfficeId { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime Date { get; set; }
+        public string Timeslots { get; set; }
+    }
+}
