@@ -32,6 +32,10 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
                 .SingleOrDefaultAsync();
 
         public Task SaveAsync() => RepositoryContext.SaveChangesAsync();
+
+        public async Task<IEnumerable<Appointment>> SearchAppointmentsByField(string status, bool trackChanges = false) =>
+            await FindByCondition(appointment => appointment.Status.Equals(status), trackChanges)
+            .ToListAsync();
     }
 }
 

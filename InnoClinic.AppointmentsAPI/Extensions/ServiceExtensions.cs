@@ -1,10 +1,12 @@
-﻿using InnoClinic.AppointmentsAPI.Application.Services;
+﻿using InnoClinic.AppointmentsAPI.Application.Consumers;
+using InnoClinic.AppointmentsAPI.Application.Services;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
 using InnoClinic.AppointmentsAPI.Core.Contracts.Repositories;
 using InnoClinic.AppointmentsAPI.Infrastructure.Repository;
 using InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses;
 using InnoClinic.AppointmentsAPI.Middlewares;
 using InnoClinicAPI.AppointmentsAPI.Application.Services;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -12,6 +14,7 @@ namespace InnoClinic.AppointmentsAPI.Extensions
 {
     public static class ServiceExtensions
     {
+
         public static void ConfigureCors(this IServiceCollection services) =>
             services.AddCors(options =>
             {
@@ -27,24 +30,16 @@ namespace InnoClinic.AppointmentsAPI.Extensions
             services.AddScoped<IResultService, ResultService>();
         }
 
-
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
         }
 
-
         public static void ConfigurePostgres(this IServiceCollection services,
             IConfiguration configuration) =>
             services.AddDbContext<RepositoryContext>(opts =>
             opts.UseNpgsql(configuration.GetConnectionString("dbConnection"), b =>
-            b.MigrationsAssembly("InnoClinic.AppointmentsAPI")));
-
-        public static void ConfigureSql(this IServiceCollection services,
-            IConfiguration configuration) =>
-            services.AddDbContext<RepositoryContext>(opts =>
-            opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b =>
             b.MigrationsAssembly("InnoClinic.AppointmentsAPI")));
 
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
@@ -60,6 +55,21 @@ namespace InnoClinic.AppointmentsAPI.Extensions
                 .CreateLogger();
             logging.ClearProviders();
             logging.AddSerilog(logger);
+        }
+
+        public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<ServiceUpdatedConsumer>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.ReceiveEndpoint("message-created-event", e =>
+                    {
+                        e.ConfigureConsumer<ServiceUpdatedConsumer>(context);
+                    });
+                });
+            });
         }
     }
 }

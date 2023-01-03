@@ -9,5 +9,7 @@
         public Guid OfficeId { get; set; }
         public string Date { get; set; }
         public string Timeslots { get; set; }
+        public string Status { get; set; }
+        public string ServiceName { get; set; }
     }
 }

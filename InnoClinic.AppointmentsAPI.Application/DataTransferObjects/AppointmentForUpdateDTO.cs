@@ -16,5 +16,8 @@ namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
         public string Timeslots { get; set; }
+        [Required]
+        public string Status { get; set; }
+        public string ServiceName { get; set; }
     }
 }
