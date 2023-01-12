@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoClinic.AppointmentsAPI", "InnoClinic.AppointmentsAPI\InnoClinic.AppointmentsAPI.csproj", "{C4835B43-C215-477B-A8C1-60D19F4AFCD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoClinic.AppointmentsAPI", "InnoClinic.AppointmentsAPI\InnoClinic.AppointmentsAPI.csproj", "{C4835B43-C215-477B-A8C1-60D19F4AFCD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoClinic.AppointmentsAPI.Core", "InnoClinic.AppointmentsAPI.Core\InnoClinic.AppointmentsAPI.Core.csproj", "{DA9FA55E-16C9-446C-AE85-B6BB0D31FB69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoClinic.AppointmentsAPI.Infrastructure", "InnoClinic.AppointmentsAPI.Infrastructure\InnoClinic.AppointmentsAPI.Infrastructure.csproj", "{780D9DA5-DB7A-45CF-AFFC-036ECEC613AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoClinic.AppointmentsAPI.Application", "InnoClinic.AppointmentsAPI.Application\InnoClinic.AppointmentsAPI.Application.csproj", "{2B2C6217-1F17-4587-A476-6FFEA2F85658}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{C4835B43-C215-477B-A8C1-60D19F4AFCD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4835B43-C215-477B-A8C1-60D19F4AFCD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4835B43-C215-477B-A8C1-60D19F4AFCD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA9FA55E-16C9-446C-AE85-B6BB0D31FB69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA9FA55E-16C9-446C-AE85-B6BB0D31FB69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA9FA55E-16C9-446C-AE85-B6BB0D31FB69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA9FA55E-16C9-446C-AE85-B6BB0D31FB69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{780D9DA5-DB7A-45CF-AFFC-036ECEC613AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{780D9DA5-DB7A-45CF-AFFC-036ECEC613AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{780D9DA5-DB7A-45CF-AFFC-036ECEC613AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{780D9DA5-DB7A-45CF-AFFC-036ECEC613AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2C6217-1F17-4587-A476-6FFEA2F85658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2C6217-1F17-4587-A476-6FFEA2F85658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2C6217-1F17-4587-A476-6FFEA2F85658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2C6217-1F17-4587-A476-6FFEA2F85658}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
