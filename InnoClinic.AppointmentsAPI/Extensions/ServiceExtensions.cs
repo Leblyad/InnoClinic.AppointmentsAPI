@@ -57,7 +57,7 @@ namespace InnoClinic.AppointmentsAPI.Extensions
             logging.AddSerilog(logger);
         }
 
-        public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureMassTransit(this IServiceCollection services)
         {
             services.AddMassTransit(x =>
             {
