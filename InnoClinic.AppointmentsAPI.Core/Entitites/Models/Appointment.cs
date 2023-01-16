@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InnoClinic.AppointmentsAPI.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InnoClinic.AppointmentsAPI.Core.Entitites.Models
@@ -20,5 +21,8 @@ namespace InnoClinic.AppointmentsAPI.Core.Entitites.Models
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
         public string Timeslots { get; set; }
+        [Required]
+        public StatusEnum Status { get; set; }
+        public string ServiceName { get; set; }
     }
 }

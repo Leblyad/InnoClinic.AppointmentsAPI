@@ -40,8 +40,15 @@ namespace InnoClinic.AppointmentsAPI.Migrations
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("SpecializationId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Timeslots")
                         .HasColumnType("text");
