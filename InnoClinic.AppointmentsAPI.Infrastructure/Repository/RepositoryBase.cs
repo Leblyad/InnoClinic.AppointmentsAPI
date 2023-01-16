@@ -18,7 +18,7 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository
         public void Delete(T entity) => RepositoryContext.Set<T>().Remove(entity);
 
         public IQueryable<T> FindAll(bool trackChanges) =>
-            !trackChanges ?
+            trackChanges ?
             RepositoryContext.Set<T>() :
             RepositoryContext.Set<T>()
             .AsNoTracking();

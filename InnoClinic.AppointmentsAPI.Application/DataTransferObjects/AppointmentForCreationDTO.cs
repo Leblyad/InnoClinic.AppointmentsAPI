@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InnoClinic.AppointmentsAPI.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
 {
@@ -17,7 +18,7 @@ namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
         public DateTime Date { get; set; }
         public string Timeslots { get; set; }
         [Required]
-        public string Status { get; set; }
+        public StatusEnum Status { get; set; }
         public string ServiceName { get; set; }
     }
 }
