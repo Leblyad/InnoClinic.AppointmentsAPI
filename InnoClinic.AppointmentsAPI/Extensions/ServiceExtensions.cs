@@ -8,6 +8,8 @@ using InnoClinic.AppointmentsAPI.Middlewares;
 using InnoClinicAPI.AppointmentsAPI.Application.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 namespace InnoClinic.AppointmentsAPI.Extensions
@@ -70,6 +72,50 @@ namespace InnoClinic.AppointmentsAPI.Extensions
                     });
                 });
             });
+        }
+
+        public static void ConfigureSwagger(this IServiceCollection services)
+            => services.AddSwaggerGen(setup =>
+            {
+                setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Place to add JWT with Bearer",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                                {
+                                    new OpenApiSecurityScheme
+                                    { Reference = new OpenApiReference
+                                        {
+                                            Type = ReferenceType.SecurityScheme,
+                                            Id = "Bearer"
+                                        },
+                                        Name = "Bearer",
+                                    },
+                                    new List<string>()
+                                }
+            });
+
+            });
+
+        public static void ConfigureJWTAuthentification(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = configuration.GetValue<string>("Routes:AuthorityRoute");
+                        options.Audience = "APIClient";
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = true,
+                            ValidAudience = "APIClient"
+                        };
+                    });
         }
     }
 }

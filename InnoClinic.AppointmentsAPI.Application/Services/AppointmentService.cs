@@ -1,10 +1,18 @@
 ﻿using AutoMapper;
 using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
+using InnoClinic.AppointmentsAPI.Application.DataTransferObjects.Views;
+using InnoClinic.AppointmentsAPI.Application.ExternalModels;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
+using InnoClinic.AppointmentsAPI.Application.Wrappers;
 using InnoClinic.AppointmentsAPI.Core.Contracts.Repositories;
 using InnoClinic.AppointmentsAPI.Core.Entitites.Models;
+using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
 using InnoClinic.AppointmentsAPI.Core.Exceptions;
 using InnoClinic.AppointmentsAPI.Core.Exceptions.UserExceptions;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace InnoClinicAPI.AppointmentsAPI.Application.Services
 {
@@ -12,11 +20,13 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper, IConfiguration configuration)
         {
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<AppointmentDTO> CreateAppointmentAsync(AppointmentForCreationDTO appointment)
@@ -44,9 +54,9 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             await _appointmentRepository.DeleteAppointmentAsync(appointment);
         }
 
-        public async Task<IEnumerable<AppointmentDTO>> GetAllAppointmentsAsync()
+        public async Task<IEnumerable<AppointmentDTO>> GetAllAppointmentsByPagesAsync(AppointmentQueryParameters appointmentParameters)
         {
-            var appointmentsCollection = await _appointmentRepository.GetAllAppointmentsAsync();
+            var appointmentsCollection = await _appointmentRepository.GetAllAppointmentsByPagesAsync(appointmentParameters);
 
             return _mapper.Map<IEnumerable<AppointmentDTO>>(appointmentsCollection);
         }
@@ -82,5 +92,30 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             await _appointmentRepository.SaveAsync();
         }
 
+        public async Task<IEnumerable<AppointmentViewDTO>> GetAllAppointmentsAsync(string accessToken)
+        {
+            var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
+
+            var doctorsIds = appointments.Select(doc => doc.DoctorId).Distinct();
+            var patientIds = appointments.Select(pat => pat.PatientId).Distinct();
+            var servicesIds = appointments.Select(serv => serv.ServiceId).Distinct();
+
+            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+
+            var doctors = await httpClient.GetEntities<DoctorDTO>(doctorsIds);
+            var patients = await httpClient.GetEntities<PatientDTO>(patientIds);
+            var services = await httpClient.GetEntities<ServiceDTO>(servicesIds);
+
+            var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
+
+            foreach(var app in appointmentsView)
+            {
+                app.Doctor = doctors.FirstOrDefault(doc => app.Doctor.Id.Equals(doc.Id));
+                app.Patient = patients.FirstOrDefault(pat => app.Patient.Id.Equals(pat.Id));
+                app.Patient = patients.FirstOrDefault(serv => app.Service.Id.Equals(serv.Id));
+            }
+
+            return appointmentsView;
+        }
     }
 }

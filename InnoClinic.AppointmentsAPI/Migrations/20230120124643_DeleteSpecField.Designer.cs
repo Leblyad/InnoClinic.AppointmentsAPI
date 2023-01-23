@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InnoClinic.AppointmentsAPI.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20221220123121_CreateDatabase")]
-    partial class CreateDatabase
+    [Migration("20230120124643_DeleteSpecField")]
+    partial class DeleteSpecField
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,11 +39,17 @@ namespace InnoClinic.AppointmentsAPI.Migrations
                     b.Property<Guid>("OfficeId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SpecializationId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Timeslots")
                         .HasColumnType("text");

@@ -1,5 +1,7 @@
 ﻿using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
+using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinicsAPI.Controllers
@@ -16,9 +18,9 @@ namespace InnoClinicsAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAppointments()
+        public async Task<IActionResult> GetAppointments([FromQuery] AppointmentQueryParameters appointmentParameters)
         {
-            var appointmentsCollection = await _appointmentService.GetAllAppointmentsAsync();
+            var appointmentsCollection = await _appointmentService.GetAllAppointmentsByPagesAsync(appointmentParameters);
 
             return Ok(appointmentsCollection);
         }
@@ -53,6 +55,16 @@ namespace InnoClinicsAPI.Controllers
             await _appointmentService.DeleteAppointmentAsync(appointmentId);
 
             return NoContent();
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("view")]
+        public async Task<IActionResult> ViewAppointments()
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"];
+            var appointmentsCollection = await _appointmentService.GetAllAppointmentsAsync(accessToken);
+
+            return Ok(appointmentsCollection);
         }
     }
 }
