@@ -10,9 +10,6 @@ using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
 using InnoClinic.AppointmentsAPI.Core.Exceptions;
 using InnoClinic.AppointmentsAPI.Core.Exceptions.UserExceptions;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace InnoClinicAPI.AppointmentsAPI.Application.Services
 {
@@ -40,18 +37,6 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             await _appointmentRepository.CreateAppointmentAsync(appointmentEntity);
 
             return _mapper.Map<AppointmentDTO>(appointmentEntity);
-        }
-
-        public async Task DeleteAppointmentAsync(Guid appointmentId)
-        {
-            var appointment = await _appointmentRepository.GetAppointmentAsync(appointmentId);
-
-            if (appointment == null)
-            {
-                throw new AppointmentNotFoundException(appointmentId);
-            }
-
-            await _appointmentRepository.DeleteAppointmentAsync(appointment);
         }
 
         public async Task<IEnumerable<AppointmentDTO>> GetAllAppointmentsByPagesAsync(AppointmentQueryParameters appointmentParameters)
@@ -92,27 +77,62 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             await _appointmentRepository.SaveAsync();
         }
 
-        public async Task<IEnumerable<AppointmentViewDTO>> GetAllAppointmentsAsync(string accessToken)
+        public async Task<IEnumerable<AppointmentViewDTO>> ViewAppointmentListByReceptionistAsync(string accessToken)
         {
             var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
 
             var doctorsIds = appointments.Select(doc => doc.DoctorId).Distinct();
             var patientIds = appointments.Select(pat => pat.PatientId).Distinct();
-            var servicesIds = appointments.Select(serv => serv.ServiceId).Distinct();
 
             var httpClient = new HttpClientWrapper(accessToken, _configuration);
 
             var doctors = await httpClient.GetEntities<DoctorDTO>(doctorsIds);
             var patients = await httpClient.GetEntities<PatientDTO>(patientIds);
-            var services = await httpClient.GetEntities<ServiceDTO>(servicesIds);
 
             var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
 
-            foreach(var app in appointmentsView)
+            foreach (var app in appointmentsView)
             {
                 app.Doctor = doctors.FirstOrDefault(doc => app.Doctor.Id.Equals(doc.Id));
                 app.Patient = patients.FirstOrDefault(pat => app.Patient.Id.Equals(pat.Id));
-                app.Patient = patients.FirstOrDefault(serv => app.Service.Id.Equals(serv.Id));
+            }
+
+            return appointmentsView;
+        }
+
+        public async Task<IEnumerable<AppointmentViewDTO>> ViewAppointmentHistoryByDoctorAndPatientAsync(Guid patientId, string accessToken)
+        {
+            var appointments = await _appointmentRepository.GetAppointmentsByPatientId(patientId);
+
+            var doctorsIds = appointments.Select(doc => doc.DoctorId).Distinct();
+
+            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+
+            var doctors = await httpClient.GetEntities<DoctorDTO>(doctorsIds);
+            var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
+
+            foreach (var app in appointmentsView)
+            {
+                app.Doctor = doctors.FirstOrDefault(doc => app.Doctor.Id.Equals(doc.Id));
+            }
+
+            return appointmentsView;
+        }
+
+        public async Task<IEnumerable<AppointmentViewDTO>> ViewAppointmentScheduleByDoctorAsync(Guid doctorId, string accessToken)
+        {
+            var appointments = await _appointmentRepository.GetAppointmentsByDoctorId(doctorId);
+
+            var patientsIds = appointments.Select(pat => pat.PatientId).Distinct();
+
+            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+
+            var patients = await httpClient.GetEntities<PatientDTO>(patientsIds);
+            var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
+
+            foreach (var app in appointmentsView)
+            {
+                app.Patient = patients.FirstOrDefault(pat => app.Patient.Id.Equals(pat.Id));
             }
 
             return appointmentsView;

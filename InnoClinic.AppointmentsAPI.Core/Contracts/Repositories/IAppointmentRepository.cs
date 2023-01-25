@@ -13,6 +13,8 @@ namespace InnoClinic.AppointmentsAPI.Core.Contracts.Repositories
         Task CreateAppointmentAsync(Appointment appointment);
         Task DeleteAppointmentAsync(Appointment appointment);
         Task UpdateAppointmentsByStatusAndServiceId(StatusEnum status, Guid serviceId, string serviceName);
+        Task<IEnumerable<Appointment>> GetAppointmentsByPatientId(Guid patientId, bool trackChanges = false);
+        Task<IEnumerable<Appointment>> GetAppointmentsByDoctorId(Guid doctorId, bool trackChanges = false);
         Task SaveAsync();
     }
 }

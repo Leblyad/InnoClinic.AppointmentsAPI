@@ -1,10 +1,5 @@
 ﻿using InnoClinic.AppointmentsAPI.Application.ExternalModels;
 using InnoClinic.AppointmentsAPI.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects.Views
 {
@@ -19,6 +14,5 @@ namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects.Views
 
         public DoctorDTO Doctor { get; set; }
         public PatientDTO Patient { get; set; }
-        public ServiceDTO Service { get; set; }
     }
 }

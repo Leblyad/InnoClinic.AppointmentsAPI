@@ -17,8 +17,7 @@ namespace InnoClinic.AppointmentsAPI.Application.MappingProfiles
 
             CreateMap<Appointment, AppointmentViewDTO>()
                 .ForPath(dest => dest.Patient.Id, opt => opt.MapFrom(src => src.PatientId))
-                .ForPath(dest => dest.Doctor.Id, opt => opt.MapFrom(src => src.DoctorId))
-                .ForPath(dest => dest.Service.Id, opt => opt.MapFrom(src => src.ServiceId));
+                .ForPath(dest => dest.Doctor.Id, opt => opt.MapFrom(src => src.DoctorId));
         }
     }
 }

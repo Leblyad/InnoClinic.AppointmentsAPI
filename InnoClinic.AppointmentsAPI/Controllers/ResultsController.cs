@@ -1,5 +1,7 @@
 ﻿using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
+using InnoClinic.AppointmentsAPI.Attributes;
+using InnoClinic.AppointmentsAPI.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinic.AppointmentsAPI.Controllers
@@ -15,14 +17,7 @@ namespace InnoClinic.AppointmentsAPI.Controllers
             _resultService = resultService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetResults()
-        {
-            var resultsCollection = await _resultService.GetAllResultsAsync();
-
-            return Ok(resultsCollection);
-        }
-
+        [Roles(Role.Patient, Role.Doctor)]
         [HttpGet("{resultId:guid}")]
         public async Task<IActionResult> GetResultById(Guid resultId)
         {
@@ -31,6 +26,7 @@ namespace InnoClinic.AppointmentsAPI.Controllers
             return Ok(resultDTO);
         }
 
+        [Roles(Role.Doctor)]
         [HttpPost]
         public async Task<IActionResult> CreateResult([FromBody] ResultForCreationDTO result)
         {
@@ -39,18 +35,11 @@ namespace InnoClinic.AppointmentsAPI.Controllers
             return CreatedAtAction(nameof(GetResultById), new { resultId = resultDTO.Id }, resultDTO);
         }
 
+        [Roles(Role.Doctor)]
         [HttpPut("{resultId:guid}")]
         public async Task<IActionResult> UpdateResult(Guid resultId, [FromBody] ResultForUpdateDTO result)
         {
             await _resultService.UpdateResultAsync(resultId, result);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{resultId:guid}")]
-        public async Task<IActionResult> DeleteResult(Guid resultId)
-        {
-            await _resultService.DeleteResultAsync(resultId);
 
             return NoContent();
         }

@@ -55,6 +55,14 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync(bool trackChanges = false) =>
             await FindAll(trackChanges)
                 .ToListAsync();
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientId(Guid patientId, bool trackChanges = false) =>
+            await FindByCondition(app => app.PatientId.Equals(patientId), trackChanges)
+            .ToListAsync();
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorId(Guid doctorId, bool trackChanges = false) =>
+            await FindByCondition(app => app.DoctorId.Equals(doctorId), trackChanges)
+            .ToListAsync();
     }
 }
 
