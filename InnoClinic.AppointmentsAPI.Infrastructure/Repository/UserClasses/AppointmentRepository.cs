@@ -1,5 +1,6 @@
 ﻿using InnoClinic.AppointmentsAPI.Core.Contracts.Repositories;
 using InnoClinic.AppointmentsAPI.Core.Entitites.Models;
+using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
 using InnoClinic.AppointmentsAPI.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,9 +25,15 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
             await RepositoryContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync(bool trackChanges = false) =>
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsByPagesAsync(AppointmentQueryParameters appointmentParameters, bool trackChanges = false) =>
+            appointmentParameters.PageNumber > 0
+            && appointmentParameters.PageSize > 0 ?
             await FindAll(trackChanges)
-            .ToListAsync();
+                .Skip((appointmentParameters.PageNumber - 1) * appointmentParameters.PageSize)
+                .Take(appointmentParameters.PageSize)
+                .ToListAsync() :
+            await FindAll(trackChanges)
+                .ToListAsync();
 
         public async Task<Appointment> GetAppointmentAsync(Guid appointmentId, bool trackChanges = false) =>
             await FindByCondition(appointment => appointment.Id.Equals(appointmentId), trackChanges)
@@ -44,6 +51,18 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
             }
             await SaveAsync();
         }
+
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync(bool trackChanges = false) =>
+            await FindAll(trackChanges)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientId(Guid patientId, bool trackChanges = false) =>
+            await FindByCondition(app => app.PatientId.Equals(patientId), trackChanges)
+            .ToListAsync();
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorId(Guid doctorId, bool trackChanges = false) =>
+            await FindByCondition(app => app.DoctorId.Equals(doctorId), trackChanges)
+            .ToListAsync();
     }
 }
 

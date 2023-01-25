@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
+using InnoClinic.AppointmentsAPI.Application.DataTransferObjects.Views;
 using InnoClinic.AppointmentsAPI.Core.Entitites.Models;
 
 namespace InnoClinic.AppointmentsAPI.Application.MappingProfiles
@@ -13,6 +14,10 @@ namespace InnoClinic.AppointmentsAPI.Application.MappingProfiles
             CreateMap<AppointmentForCreationDTO, Appointment>();
 
             CreateMap<AppointmentForUpdateDTO, Appointment>().ReverseMap();
+
+            CreateMap<Appointment, AppointmentViewDTO>()
+                .ForPath(dest => dest.Patient.Id, opt => opt.MapFrom(src => src.PatientId))
+                .ForPath(dest => dest.Doctor.Id, opt => opt.MapFrom(src => src.DoctorId));
         }
     }
 }

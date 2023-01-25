@@ -1,5 +1,8 @@
 ﻿using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
+using InnoClinic.AppointmentsAPI.Attributes;
+using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
+using InnoClinic.AppointmentsAPI.Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinicsAPI.Controllers
@@ -15,14 +18,16 @@ namespace InnoClinicsAPI.Controllers
             _appointmentService = appointmentService;
         }
 
+        [Roles(Role.Receptionist)]
         [HttpGet]
-        public async Task<IActionResult> GetAppointments()
+        public async Task<IActionResult> GetAppointments([FromQuery] AppointmentQueryParameters appointmentParameters)
         {
-            var appointmentsCollection = await _appointmentService.GetAllAppointmentsAsync();
+            var appointmentsCollection = await _appointmentService.GetAllAppointmentsByPagesAsync(appointmentParameters);
 
             return Ok(appointmentsCollection);
         }
 
+        [Roles]
         [HttpGet("{appointmentId:guid}")]
         public async Task<IActionResult> GetAppointmentById(Guid appointmentId)
         {
@@ -31,6 +36,7 @@ namespace InnoClinicsAPI.Controllers
             return Ok(appointmentDTO);
         }
 
+        [Roles]
         [HttpPost]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentForCreationDTO appointment)
         {
@@ -39,20 +45,43 @@ namespace InnoClinicsAPI.Controllers
             return CreatedAtAction(nameof(GetAppointmentById), new { appointmentId = appointmentDTO.Id }, appointmentDTO);
         }
 
-        [HttpPut("{appointmentId:guid}")]
-        public async Task<IActionResult> UpdateAppointment(Guid appointmentId, [FromBody] AppointmentForUpdateDTO appointment)
+        [Roles(Role.Receptionist)]
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody] AppointmentForUpdateDTO appointment)
         {
-            await _appointmentService.UpdateAppointmentAsync(appointmentId, appointment);
+            await _appointmentService.UpdateAppointmentAsync(id, appointment);
 
             return NoContent();
         }
 
-        [HttpDelete("{appointmentId:guid}")]
-        public async Task<IActionResult> DeleteAppointment(Guid appointmentId)
+        [Roles(Role.Receptionist)]
+        [HttpGet("view")]
+        public async Task<IActionResult> ViewAppointmentListByReceptionist()
         {
-            await _appointmentService.DeleteAppointmentAsync(appointmentId);
+            var accessToken = HttpContext.Request.Headers["Authorization"];
+            var appointments = await _appointmentService.ViewAppointmentListByReceptionistAsync(accessToken);
 
-            return NoContent();
+            return Ok(appointments);
+        }
+
+        [Roles(Role.Doctor, Role.Patient)]
+        [HttpGet("Patient/{patientId:guid}")]
+        public async Task<IActionResult> ViewAppointmentHistoryByDoctorAndPatient(Guid patientId)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"];
+            var appointments = await _appointmentService.ViewAppointmentHistoryByDoctorAndPatientAsync(patientId, accessToken);
+
+            return Ok(appointments);
+        }
+
+        [Roles(Role.Doctor)]
+        [HttpGet("Doctor/{doctorId:guid}")]
+        public async Task<IActionResult> ViewAppointmentScheduleByDoctor(Guid doctorId)
+        {
+            var accessToken = HttpContext.Request.Headers["Authorization"];
+            var appointments = await _appointmentService.ViewAppointmentScheduleByDoctorAsync(doctorId, accessToken);
+
+            return Ok(appointments);
         }
     }
 }

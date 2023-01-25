@@ -32,25 +32,6 @@ namespace InnoClinic.AppointmentsAPI.Application.Services
             return _mapper.Map<ResultDTO>(resultEntity);
         }
 
-        public async Task DeleteResultAsync(Guid resultId)
-        {
-            var result = await _resultRepository.GetResultAsync(resultId);
-
-            if (result == null)
-            {
-                throw new ResultNotFoundException(resultId);
-            }
-
-            await _resultRepository.DeleteResultAsync(result);
-        }
-
-        public async Task<IEnumerable<ResultDTO>> GetAllResultsAsync()
-        {
-            var resultsCollection = await _resultRepository.GetAllResultsAsync();
-
-            return _mapper.Map<IEnumerable<ResultDTO>>(resultsCollection);
-        }
-
         public async Task<ResultDTO> GetResultAsync(Guid resultId)
         {
             var result = await _resultRepository.GetResultAsync(resultId);

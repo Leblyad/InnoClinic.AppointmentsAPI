@@ -6,7 +6,7 @@ namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
     public class AppointmentForUpdateDTO
     {
         [Required]
-        public Guid SpecializationId { get; set; }
+        public Guid PatientId { get; set; }
         [Required]
         public Guid DoctorId { get; set; }
         [Required]
