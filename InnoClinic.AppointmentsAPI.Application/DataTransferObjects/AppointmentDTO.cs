@@ -8,9 +8,10 @@ namespace InnoClinic.AppointmentsAPI.Application.DataTransferObjects
         public Guid PatientId { get; set; }
         public Guid DoctorId { get; set; }
         public Guid ServiceId { get; set; }
-        public Guid OfficeId { get; set; }
-        public string Date { get; set; }
-        public string Timeslots { get; set; }
+        public string OfficeId { get; set; }
+        public DateTime Date { get; set; }
+        public TimeSpan Time { get; set; }
+        public Duration Duration { get; set; }
         public StatusEnum Status { get; set; }
         public string ServiceName { get; set; }
     }

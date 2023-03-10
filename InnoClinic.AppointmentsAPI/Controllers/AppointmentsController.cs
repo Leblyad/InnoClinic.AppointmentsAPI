@@ -3,6 +3,7 @@ using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
 using InnoClinic.AppointmentsAPI.Attributes;
 using InnoClinic.AppointmentsAPI.Core.Entitites.QueryParameters;
 using InnoClinic.AppointmentsAPI.Core.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InnoClinicsAPI.Controllers
@@ -27,22 +28,22 @@ namespace InnoClinicsAPI.Controllers
             return Ok(appointmentsCollection);
         }
 
-        [Roles]
-        [HttpGet("{appointmentId:guid}")]
-        public async Task<IActionResult> GetAppointmentById(Guid appointmentId)
+        [Authorize]
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetAppointmentById(Guid id)
         {
-            var appointmentDTO = await _appointmentService.GetAppointmentAsync(appointmentId);
+            var appointmentDTO = await _appointmentService.GetAppointmentAsync(id);
 
             return Ok(appointmentDTO);
         }
 
-        [Roles]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentForCreationDTO appointment)
         {
             var appointmentDTO = await _appointmentService.CreateAppointmentAsync(appointment);
 
-            return CreatedAtAction(nameof(GetAppointmentById), new { appointmentId = appointmentDTO.Id }, appointmentDTO);
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = appointmentDTO.Id }, appointmentDTO);
         }
 
         [Roles(Role.Receptionist)]
@@ -82,6 +83,14 @@ namespace InnoClinicsAPI.Controllers
             var appointments = await _appointmentService.ViewAppointmentScheduleByDoctorAsync(doctorId, accessToken);
 
             return Ok(appointments);
+        }
+
+        [HttpGet("TimeSlots/{doctorId:guid}")]
+        public async Task<IActionResult> GetTimeSlots(Guid doctorId)
+        {
+            var timeSlots = await _appointmentService.GetTimeSlotsAsync(doctorId);
+
+            return Ok(timeSlots);
         }
     }
 }

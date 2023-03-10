@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using InnoClinic.AppointmentsAPI.Application.DataTransferObjects;
+using InnoClinic.AppointmentsAPI.Application.DataTransferObjects.TimeSlots;
 using InnoClinic.AppointmentsAPI.Application.DataTransferObjects.Views;
 using InnoClinic.AppointmentsAPI.Application.ExternalModels;
+using InnoClinic.AppointmentsAPI.Application.Services;
 using InnoClinic.AppointmentsAPI.Application.Services.Abstractions;
 using InnoClinic.AppointmentsAPI.Application.Wrappers;
 using InnoClinic.AppointmentsAPI.Core.Contracts.Repositories;
@@ -18,12 +20,14 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper, IConfiguration configuration)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IMapper mapper, IConfiguration configuration, HttpClient httpClient)
         {
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
             _configuration = configuration;
+            _httpClient = httpClient;
         }
 
         public async Task<AppointmentDTO> CreateAppointmentAsync(AppointmentForCreationDTO appointment)
@@ -84,7 +88,7 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             var doctorsIds = appointments.Select(doc => doc.DoctorId).Distinct();
             var patientIds = appointments.Select(pat => pat.PatientId).Distinct();
 
-            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+            var httpClient = new HttpClientWrapper(_httpClient, accessToken, _configuration);
 
             var doctors = await httpClient.GetEntities<DoctorDTO>(doctorsIds);
             var patients = await httpClient.GetEntities<PatientDTO>(patientIds);
@@ -102,11 +106,11 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
 
         public async Task<IEnumerable<AppointmentViewDTO>> ViewAppointmentHistoryByDoctorAndPatientAsync(Guid patientId, string accessToken)
         {
-            var appointments = await _appointmentRepository.GetAppointmentsByPatientId(patientId);
+            var appointments = await _appointmentRepository.GetAppointmentsByPatientIdAsync(patientId);
 
             var doctorsIds = appointments.Select(doc => doc.DoctorId).Distinct();
 
-            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+            var httpClient = new HttpClientWrapper(_httpClient, accessToken, _configuration);
 
             var doctors = await httpClient.GetEntities<DoctorDTO>(doctorsIds);
             var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
@@ -121,11 +125,11 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
 
         public async Task<IEnumerable<AppointmentViewDTO>> ViewAppointmentScheduleByDoctorAsync(Guid doctorId, string accessToken)
         {
-            var appointments = await _appointmentRepository.GetAppointmentsByDoctorId(doctorId);
+            var appointments = await _appointmentRepository.GetAppointmentsByDoctorIdAsync(doctorId);
 
             var patientsIds = appointments.Select(pat => pat.PatientId).Distinct();
 
-            var httpClient = new HttpClientWrapper(accessToken, _configuration);
+            var httpClient = new HttpClientWrapper(_httpClient, accessToken, _configuration);
 
             var patients = await httpClient.GetEntities<PatientDTO>(patientsIds);
             var appointmentsView = _mapper.Map<IEnumerable<AppointmentViewDTO>>(appointments);
@@ -136,6 +140,14 @@ namespace InnoClinicAPI.AppointmentsAPI.Application.Services
             }
 
             return appointmentsView;
+        }
+
+        public async Task<IEnumerable<DateWithTimeSlots>> GetTimeSlotsAsync(Guid doctorId)
+        {
+            var appointments = await _appointmentRepository.GetAppointmentsByDoctorForWeekAsync(doctorId);
+            var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDTO>>(appointments).ToList();
+
+            return TimeSlots.GetTimeSlotsWithReservedTime(appointmentsDto);
         }
     }
 }

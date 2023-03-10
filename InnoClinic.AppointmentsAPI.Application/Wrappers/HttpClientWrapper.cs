@@ -11,13 +11,23 @@ namespace InnoClinic.AppointmentsAPI.Application.Wrappers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public HttpClientWrapper(string accessToken, IConfiguration configuration)
+        public HttpClientWrapper(HttpClient httpClient, string accessToken, IConfiguration configuration)
+        {
+            _httpClient = httpClient;
+            _httpClient.DefaultRequestHeaders
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", accessToken);
+
+            _configuration = configuration;
+        }
+
+        public HttpClientWrapper(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders
                 .Accept
                 .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", accessToken);
 
             _configuration = configuration;
         }

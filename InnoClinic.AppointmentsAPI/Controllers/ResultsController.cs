@@ -18,10 +18,10 @@ namespace InnoClinic.AppointmentsAPI.Controllers
         }
 
         [Roles(Role.Patient, Role.Doctor)]
-        [HttpGet("{resultId:guid}")]
-        public async Task<IActionResult> GetResultById(Guid resultId)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetResultById(Guid id)
         {
-            var resultDTO = await _resultService.GetResultAsync(resultId);
+            var resultDTO = await _resultService.GetResultAsync(id);
 
             return Ok(resultDTO);
         }
@@ -36,10 +36,10 @@ namespace InnoClinic.AppointmentsAPI.Controllers
         }
 
         [Roles(Role.Doctor)]
-        [HttpPut("{resultId:guid}")]
-        public async Task<IActionResult> UpdateResult(Guid resultId, [FromBody] ResultForUpdateDTO result)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateResult(Guid id, [FromBody] ResultForUpdateDTO result)
         {
-            await _resultService.UpdateResultAsync(resultId, result);
+            await _resultService.UpdateResultAsync(id, result);
 
             return NoContent();
         }

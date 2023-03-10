@@ -1,4 +1,5 @@
 ﻿using InnoClinic.AppointmentsAPI.Core.Entitites.Models;
+using InnoClinic.AppointmentsAPI.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository
@@ -20,6 +21,8 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
         }
     }
 }

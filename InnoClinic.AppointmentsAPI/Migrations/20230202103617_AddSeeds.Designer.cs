@@ -3,6 +3,7 @@ using System;
 using InnoClinic.AppointmentsAPI.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InnoClinic.AppointmentsAPI.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20230202103617_AddSeeds")]
+    partial class AddSeeds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +36,6 @@ namespace InnoClinic.AppointmentsAPI.Migrations
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
-
                     b.Property<string>("OfficeId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -53,8 +52,8 @@ namespace InnoClinic.AppointmentsAPI.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan>("Time")
-                        .HasColumnType("interval");
+                    b.Property<string>("Timeslots")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -64,80 +63,74 @@ namespace InnoClinic.AppointmentsAPI.Migrations
                         new
                         {
                             Id = new Guid("f5549e81-765b-4f7f-a21f-584fd1dc942a"),
-                            Date = new DateTime(2023, 2, 26, 15, 11, 8, 73, DateTimeKind.Local).AddTicks(7182),
+                            Date = new DateTime(2023, 2, 2, 13, 36, 17, 10, DateTimeKind.Local).AddTicks(2900),
                             DoctorId = new Guid("4575b750-37e9-4194-ba18-b9219ac703b6"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("61f80132-8914-4995-8c8f-cdabcd756d4c"),
                             ServiceId = new Guid("8c6d093c-c52c-4a9b-709b-08dac166520c"),
                             ServiceName = "SomeName1",
                             Status = 0,
-                            Time = new TimeSpan(0, 10, 0, 0, 0)
+                            Timeslots = "100"
                         },
                         new
                         {
                             Id = new Guid("b3b0d2b0-f0f1-46ab-87d2-52c7f29cd9b8"),
                             Date = new DateTime(2023, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = new Guid("8e19b6bf-3c40-403c-a984-d713e300b0e7"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("63a62769-de2a-4073-991f-c18f1a44df26"),
                             ServiceId = new Guid("24d92a89-a088-4687-9947-08dac62592e6"),
                             ServiceName = "SomeName2",
                             Status = 0,
-                            Time = new TimeSpan(0, 11, 0, 0, 0)
+                            Timeslots = "100"
                         },
                         new
                         {
                             Id = new Guid("f84e6d4a-572e-46f1-909d-3ad50b02a88e"),
                             Date = new DateTime(2023, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = new Guid("8e19b6bf-3c40-403c-a984-d713e300b0e7"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("61f80132-8914-4995-8c8f-cdabcd756d4c"),
                             ServiceId = new Guid("24d92a89-a088-4687-9947-08dac62592e6"),
                             ServiceName = "SomeName2",
                             Status = 0,
-                            Time = new TimeSpan(0, 12, 0, 0, 0)
+                            Timeslots = "100"
                         },
                         new
                         {
                             Id = new Guid("54d11f1b-ef2b-4edd-906c-307b86e2da50"),
                             Date = new DateTime(2023, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = new Guid("4575b750-37e9-4194-ba18-b9219ac703b6"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("63a62769-de2a-4073-991f-c18f1a44df26"),
                             ServiceId = new Guid("8c6d093c-c52c-4a9b-709b-08dac166520c"),
                             ServiceName = "SomeName1",
                             Status = 0,
-                            Time = new TimeSpan(0, 13, 0, 0, 0)
+                            Timeslots = "100"
                         },
                         new
                         {
                             Id = new Guid("d38fce23-10a6-45e1-a253-907e4be5b6a4"),
-                            Date = new DateTime(2023, 2, 26, 15, 11, 8, 73, DateTimeKind.Local).AddTicks(7220),
+                            Date = new DateTime(2023, 2, 2, 13, 36, 17, 10, DateTimeKind.Local).AddTicks(2932),
                             DoctorId = new Guid("8e19b6bf-3c40-403c-a984-d713e300b0e7"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("61f80132-8914-4995-8c8f-cdabcd756d4c"),
                             ServiceId = new Guid("8c6d093c-c52c-4a9b-709b-08dac166520c"),
                             ServiceName = "SomeName1",
                             Status = 0,
-                            Time = new TimeSpan(0, 14, 0, 0, 0)
+                            Timeslots = "100"
                         },
                         new
                         {
                             Id = new Guid("7c567279-5584-4aa3-bb02-7052e866eab3"),
                             Date = new DateTime(2023, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = new Guid("4575b750-37e9-4194-ba18-b9219ac703b6"),
-                            Duration = 0,
                             OfficeId = "639990c96e070a016e91e332",
                             PatientId = new Guid("61f80132-8914-4995-8c8f-cdabcd756d4c"),
                             ServiceId = new Guid("24d92a89-a088-4687-9947-08dac62592e6"),
                             ServiceName = "SomeName2",
                             Status = 0,
-                            Time = new TimeSpan(0, 15, 0, 0, 0)
+                            Timeslots = "100"
                         });
                 });
 

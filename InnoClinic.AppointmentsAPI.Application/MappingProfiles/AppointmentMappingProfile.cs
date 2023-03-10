@@ -16,6 +16,7 @@ namespace InnoClinic.AppointmentsAPI.Application.MappingProfiles
             CreateMap<AppointmentForUpdateDTO, Appointment>().ReverseMap();
 
             CreateMap<Appointment, AppointmentViewDTO>()
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("dd/MM/yyyy")))
                 .ForPath(dest => dest.Patient.Id, opt => opt.MapFrom(src => src.PatientId))
                 .ForPath(dest => dest.Doctor.Id, opt => opt.MapFrom(src => src.DoctorId));
         }

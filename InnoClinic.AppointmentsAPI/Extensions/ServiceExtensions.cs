@@ -10,24 +10,31 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Polly.Extensions.Http;
 using Serilog;
+using System.Net;
 
 namespace InnoClinic.AppointmentsAPI.Extensions
 {
     public static class ServiceExtensions
     {
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(2), retryCount: 5);
 
-        public static void ConfigureCors(this IServiceCollection services) =>
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder =>
-                builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-            });
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(delay);
+        }
 
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddHttpClient<IAppointmentService, AppointmentService>()
+                .AddPolicyHandler(GetRetryPolicy());
+
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IResultService, ResultService>();
         }

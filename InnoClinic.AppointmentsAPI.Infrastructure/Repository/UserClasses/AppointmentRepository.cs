@@ -31,6 +31,9 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
             await FindAll(trackChanges)
                 .Skip((appointmentParameters.PageNumber - 1) * appointmentParameters.PageSize)
                 .Take(appointmentParameters.PageSize)
+                .OrderBy(app => app.Time)
+            .ThenBy(app => app.Date)
+                        .ThenBy(app => app.Date)
                 .ToListAsync() :
             await FindAll(trackChanges)
                 .ToListAsync();
@@ -41,7 +44,7 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
 
         public Task SaveAsync() => RepositoryContext.SaveChangesAsync();
 
-        public async Task UpdateAppointmentsByStatusAndServiceId(StatusEnum status, Guid serviceId, string serviceName)
+        public async Task UpdateAppointmentsByStatusAndServiceIdAsync(StatusEnum status, Guid serviceId, string serviceName)
         {
             var appointments = await FindByCondition(app => app.ServiceId.Equals(serviceId), trackChanges: true)
                 .Where(app => app.Status.Equals(status)).ToListAsync();
@@ -56,12 +59,16 @@ namespace InnoClinic.AppointmentsAPI.Infrastructure.Repository.UserClasses
             await FindAll(trackChanges)
                 .ToListAsync();
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientId(Guid patientId, bool trackChanges = false) =>
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIdAsync(Guid patientId, bool trackChanges = false) =>
             await FindByCondition(app => app.PatientId.Equals(patientId), trackChanges)
             .ToListAsync();
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorId(Guid doctorId, bool trackChanges = false) =>
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, bool trackChanges = false) =>
             await FindByCondition(app => app.DoctorId.Equals(doctorId), trackChanges)
+            .ToListAsync();
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorForWeekAsync(Guid doctorId, bool trackChanges = false) =>
+            await FindByCondition(app => app.DoctorId.Equals(doctorId) && (app.Date.Date >= DateTime.Now.Date && app.Date.Date <= DateTime.Now.AddDays(7).Date), trackChanges)
             .ToListAsync();
     }
 }

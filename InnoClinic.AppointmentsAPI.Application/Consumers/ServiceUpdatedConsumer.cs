@@ -16,7 +16,7 @@ namespace InnoClinic.AppointmentsAPI.Application.Consumers
 
         public async Task Consume(ConsumeContext<ServiceUpdatedMessage> context) =>
             await _appointmentRepository
-            .UpdateAppointmentsByStatusAndServiceId(StatusEnum.Approved, context.Message.Id, context.Message.Name);
+            .UpdateAppointmentsByStatusAndServiceIdAsync(StatusEnum.Approved, context.Message.Id, context.Message.Name);
     }
 
 }
